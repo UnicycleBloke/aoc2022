@@ -19,11 +19,11 @@ void run(const char* filename)
 {
     auto lines = aoc::read_lines(filename, false); 
 
-    auto p1 = part1(algo, grid);
+    auto p1 = part1(lines);
     cout << "Part1: " << p1 << '\n';
     //aoc::check_result(p1, 5218);
 
-    auto p2 = part2(algo, grid);
+    auto p2 = part2(lines);
     cout << "Part2: " << p2 << '\n';
     //aoc::check_result(p2, 15527);
 }
