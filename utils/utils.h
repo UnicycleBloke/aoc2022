@@ -40,8 +40,10 @@ void trim(std::string& s);
 std::string replace(std::string source, const std::string& search, const std::string& replace);
 std::vector<std::string> split(std::string source, std::string delim, bool allow_blanks);
 
-std::vector<std::string> read_lines(std::istream& is, bool allow_blanks = false);
-std::vector<std::string> read_lines(std::string filename, bool allow_blanks = false);
+enum class Blanks { Allow, Suppress };
+enum class Trim   { Yes, No };
+std::vector<std::string> read_lines(std::istream& is, Blanks allow_blanks = Blanks::Suppress, Trim trim_lines = Trim::Yes);
+std::vector<std::string> read_lines(std::string filename, Blanks allow_blanks = Blanks::Suppress, Trim trim_lines = Trim::Yes);
 
 std::vector<std::string> read_groups(std::istream& is);
 std::vector<std::string> read_groups(std::string filename);
@@ -154,7 +156,7 @@ std::vector<std::tuple<Args...>> read_lines(std::istream& is, std::string pat)
     std::vector<std::tuple<Args...>> result;
     const std::regex re(pat);
 
-    auto lines = read_lines(is, false);
+    auto lines = read_lines(is, Blanks::Suppress);
     for (const auto& line: lines)
     {
         // Skip lines which don't match - useful for reading files with two or 

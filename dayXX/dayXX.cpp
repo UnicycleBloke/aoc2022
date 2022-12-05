@@ -19,6 +19,7 @@ auto part2(const T& input)
 
 void run(const char* filename)
 {
+    //auto lines = aoc::read_lines<int,int,int,int>(filename, R"((\d+)-(\d+),(\d+)-(\d+))");
     auto lines = aoc::read_lines(filename, true);     
 
     auto p1 = part1(lines);

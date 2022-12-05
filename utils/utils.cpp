@@ -64,7 +64,7 @@ std::vector<std::string> split(std::string source, std::string delim, bool allow
 }
 
 
-std::vector<std::string> read_lines(std::istream& is, bool allow_blanks)
+std::vector<std::string> read_lines(std::istream& is, Blanks allow_blanks, Trim trim_lines)
 {
     std::vector<std::string> lines;
 
@@ -72,8 +72,9 @@ std::vector<std::string> read_lines(std::istream& is, bool allow_blanks)
     {
         std::string line;
         std::getline(is, line);
-        trim(line);
-        if (allow_blanks || (line.size() > 0))
+        if (trim_lines == Trim::Yes)
+            trim(line);
+        if (allow_blanks == Blanks::Allow || (line.size() > 0))
             lines.push_back(line);
     }
 
@@ -81,10 +82,10 @@ std::vector<std::string> read_lines(std::istream& is, bool allow_blanks)
 }
 
 
-std::vector<std::string> read_lines(std::string filename, bool allow_blanks)
+std::vector<std::string> read_lines(std::string filename, Blanks allow_blanks, Trim trim_lines)
 {
     std::ifstream is{filename};
-    return read_lines(is, allow_blanks);
+    return read_lines(is, allow_blanks, trim_lines);
 }
 
 
@@ -92,7 +93,7 @@ std::vector<std::string> read_groups(std::istream& is)
 {
     std::ostringstream       ss;
     std::vector<std::string> groups;
-    std::vector<std::string> lines = read_lines(is, true);
+    std::vector<std::string> lines = read_lines(is, Blanks::Allow);
 
     for (const auto& line: lines)
     {
