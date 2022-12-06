@@ -53,7 +53,7 @@ auto part2(const T& input)
 
 void run(const char* filename)
 {
-    auto lines = aoc::read_lines(filename, true);     
+    auto lines = aoc::read_lines(filename, aoc::Blanks::Allow);     
 
     auto p1 = part1(lines);
     cout << "Part1: " << p1 << '\n';
