@@ -21,6 +21,8 @@ struct Game
 
     Game(vector<Monkey> m) : monkeys{m} 
     {
+        // Test factors are all primes. Tests are all divisions.
+        // Product of factors can therefore be used to cap worry level.
         worry_max = 1;
         for (auto& m: monkeys)
             worry_max *= m.test;
@@ -40,22 +42,14 @@ struct Game
                 if (m.op == '*') worry *= value;
 
                 if (part == Part::One)
-                {
                     worry /= 3;
-                    if ((worry % m.test) == 0)
-                        monkeys[m.if_true].items.push_back(worry);
-                    else
-                        monkeys[m.if_false].items.push_back(worry);
-                }
                 else
-                {
-                    // Test factors are all primes. Tests are all divisions.
-                    // Product of factors can therefore be used to cap worry level.
-                    if ((worry % m.test) == 0)
-                        monkeys[m.if_true].items.push_back(worry % worry_max);
-                    else
-                        monkeys[m.if_false].items.push_back(worry % worry_max);
-                }
+                    worry %= worry_max;
+
+                if ((worry % m.test) == 0)
+                    monkeys[m.if_true].items.push_back(worry);
+                else
+                    monkeys[m.if_false].items.push_back(worry);
             }
 
             m.items.clear();
