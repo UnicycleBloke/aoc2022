@@ -21,62 +21,37 @@ auto find_steps(const T& input, Point start, Point end)
     while (nodes.size() > 0)
     {
         vector<Point> nodes2;
+
         for (auto pos: nodes)
         {
             auto steps  = grid[pos.row][pos.col];
             auto height = input[pos.row][pos.col];  
 
-            // Left
-            if (pos.col > 0)
+            auto update = [&](Point pos)
             {
-                Point pos2 = pos;
-                pos2.col -= 1;
-                if (input[pos2.row][pos2.col] <= (height + 1))
+                if (input[pos.row][pos.col] <= (height + 1))
                 {
-                    bool visited = (grid[pos2.row][pos2.col] < 0xFFFF'FFFF);
-                    grid[pos2.row][pos2.col] = min(grid[pos2.row][pos2.col], steps+1);
-                    if (!visited) nodes2.push_back(pos2);
+                    bool visited = (grid[pos.row][pos.col] < 0xFFFF'FFFF);
+                    grid[pos.row][pos.col] = min(grid[pos.row][pos.col], steps+1);
+                    if (!visited) nodes2.push_back(pos);
                 }
-            }
+            };
+
+            // Left
+            if (pos.col > 0) 
+                update(Point{pos.row, pos.col-1});
 
             // Right
             if (pos.col < (grid[0].size() - 1))
-            {
-                Point pos2 = pos;
-                pos2.col += 1;
-                if (input[pos2.row][pos2.col] <= (height + 1))
-                {
-                    bool visited = (grid[pos2.row][pos2.col] < 0xFFFF'FFFF);
-                    grid[pos2.row][pos2.col] = min(grid[pos2.row][pos2.col], steps+1);
-                    if (!visited) nodes2.push_back(pos2);
-                }
-            }
+                update(Point{pos.row, pos.col+1});
 
             // Up
             if (pos.row > 0)
-            {
-                Point pos2 = pos;
-                pos2.row -= 1;
-                if (input[pos2.row][pos2.col] <= (height + 1))
-                {
-                    bool visited = (grid[pos2.row][pos2.col] < 0xFFFF'FFFF);
-                    grid[pos2.row][pos2.col] = min(grid[pos2.row][pos2.col], steps+1);
-                    if (!visited) nodes2.push_back(pos2);
-                }
-            }
+                update(Point{pos.row-1, pos.col});
 
             // Down 
             if (pos.row < (grid.size() - 1))
-            {
-                Point pos2 = pos;
-                pos2.row += 1;
-                if (input[pos2.row][pos2.col] <= (height + 1))
-                {
-                    bool visited = (grid[pos2.row][pos2.col] < 0xFFFF'FFFF);
-                    grid[pos2.row][pos2.col] = min(grid[pos2.row][pos2.col], steps+1);
-                    if (!visited) nodes2.push_back(pos2);
-                }
-            }
+                update(Point{pos.row+1, pos.col});
         }
 
         nodes = nodes2;
@@ -84,8 +59,6 @@ auto find_steps(const T& input, Point start, Point end)
 
     return grid[end.row][end.col];
 }
-
-
 
 
 template <typename T>
