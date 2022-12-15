@@ -71,10 +71,6 @@ auto part2(T grid)
 
 void run(const char* filename)
 {
-    using Pos   = pair<int,int>;
-    using Line  = vector<Pos>;
-    using Lines = vector<Line>;
-
     auto lines = aoc::read_lines(filename, aoc::Blanks::Suppress, aoc::Trim::Yes);
 
     int max_x{};
