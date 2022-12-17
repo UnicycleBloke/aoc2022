@@ -7,11 +7,11 @@ int distance(int sx, int sy, int bx, int by)
 }
 
 
-//constexpr int ROW   = 2'000'000;
-//constexpr int RANGE = 4'000'000;
+constexpr int ROW   = 2'000'000;
+constexpr int RANGE = 4'000'000;
 
-constexpr int ROW   = 10;
-constexpr int RANGE = 20;
+// constexpr int ROW   = 10;
+// constexpr int RANGE = 20;
 
 
 template <typename T>
@@ -40,6 +40,45 @@ auto part1(const T& input)
 }
 
 
+// template <typename T>
+// auto part2a(const T& input)
+// {
+//     aoc::timer timer;
+
+//     for (int y: aoc::range(0, RANGE+1))
+//     {
+//         map<pair<int,int>, int> m;
+
+//         for (auto [sx, sy, bx, by]: input)
+//         {
+//             int d = distance(sx, sy, bx, by);
+//             for (int i: aoc::range(d))
+//             {
+//                 pair<int,int> l{sx-d+i,sy+i};
+//                 int ml = m[l];
+//                 m[l] = ml + 1;
+
+//                 pair<int,int> r{sx+d-1,sy-1};
+//                 int mr = m[r];
+//                 m[r] = mr + 1;
+
+//                 pair<int,int> u{sx,sy-d};
+//                 int mu = m[u];
+//                 m[u] = mu + 1;
+
+//                 auto pair<int,int> d{sx,sy+d};
+//                 int md = m[d];
+//                 m[d] = md + 1;
+//             }
+//         }
+//     }
+
+//     return int64_t{};
+// }
+
+
+
+
 template <typename T>
 auto part2(const T& input)
 {
@@ -47,7 +86,7 @@ auto part2(const T& input)
 
     for (int y: aoc::range(0, RANGE+1))
     {
-        cout << y << "\n";
+        //cout << y << "\n";
 
         vector<pair<int,int>> r;
 
@@ -55,9 +94,11 @@ auto part2(const T& input)
         {
             int d   = distance(sx, sy, bx, by);
             int dy  = abs(sy-y);
-            int off = abs(d-dy);
-
-            r.push_back({max(0, sx-off), min(RANGE, sx+off)});
+            if (dy <= d)
+            {
+                int off = abs(d-dy);
+                r.push_back({max(0, sx-off), min(RANGE, sx+off)});
+            }
         }
 
         // Combine overlapping ranges to find missing spot. 
@@ -68,20 +109,20 @@ auto part2(const T& input)
         int xmax = r[0].second;
         for (auto [rmin, rmax]: r)
         {
-            cout << "(" << xmin << "," << xmax << ") + ";
-            cout << "(" << rmin << "," << rmax << ") = ";
+            // cout << "(" << xmin << "," << xmax << ") + ";
+            // cout << "(" << rmin << "," << rmax << ") = ";
 
             if (rmin > (xmax +1))
-                return 4'000'000 * (xmax+1) + y;
+                return int64_t{4'000'000} * (xmax+1) + y;
             else
                 xmax = max(xmax, rmax);
 
-            cout << "(" << xmin << "," << xmax << ")\n";
+            // cout << "(" << xmin << "," << xmax << ")\n";
             if (rmax >= RANGE) break;
         }
     }
 
-    return 0;
+    return int64_t{};
 }
 
 
