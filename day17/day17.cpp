@@ -14,13 +14,9 @@ struct Rock
 };
 
 
+// From the problem description - each rock is place on a 4x4 array and flattened to a string.
 constexpr Rock rocks[5] =
 {
-//   { "@@@@............", 1, 4},
-//   { ".@..@@@..@......", 3, 3},
-//   { "..@...@.@@@.....", 3, 3},
-//   { "@...@...@...@...", 4, 1},
-//   { "@@..@@..........", 2, 2}
   { "####............", 1, 4},
   { ".#..###..#......", 3, 3},
   { "..#...#.###.....", 3, 3},
@@ -29,6 +25,7 @@ constexpr Rock rocks[5] =
 };
 
 
+// Current state (position) of a falling rock.
 struct Faller
 {
     Faller(const Rock& r, int x, int y)
@@ -40,28 +37,27 @@ struct Faller
 
     void right()
     {
-        //cout << "right\n";
         if ((rx + rock.width) < 7) ++rx;
     }
 
     void left()
     {
-        //cout << "left\n";
         if (rx > 0) --rx;
     }
 
     void down()
     {
-        //cout << "down\n";
         --ry;
     }
 
-    int rx;
-    int ry;
+    int  rx;
+    int  ry;
     Rock rock;  
 };
 
 
+// Grid representing the cave. Just chars 7 wide and N tall.
+// Index 0 represents the ground.
 struct Grid
 {
     Grid(string input)
@@ -82,6 +78,9 @@ struct Grid
         tick = (tick + 1) % gases.size();
     }        
 
+    // Place characters for the falling rock into the grid. 
+    // Settled flag is used to update the actual grid, otherwise this
+    // is used for updating a temporary to aid drawing.
     void update(Faller& faller, bool settled = false)
     {
         for (int x: aoc::range(faller.rock.width))
@@ -90,11 +89,13 @@ struct Grid
             {
                 char c = faller.rock.at(x, y);
                 if (c != '.')
-                    grid[faller.ry-y][faller.rx+x] = settled ? '#' : '@';
+                    // Note the sign on y
+                    grid[faller.ry - y][faller.rx + x] = settled ? '#' : '@';
             }
         }
     }
 
+    // Checks for overlaps after a move.
     bool stuck(Faller& faller)
     {
         bool result = false;
@@ -103,16 +104,14 @@ struct Grid
             for (int y: aoc::range(faller.rock.height))
             {
                 char c1 = faller.rock.at(x, y);
-                char c2 = grid[faller.ry-y][faller.rx+x];
-                //cout << c1 << c2 << '|';
+                char c2 = grid[faller.ry - y][faller.rx + x];
                 if ((c1 != '.') && (c2 != '.'))
                 {
-                    result = true;
+                    return true;
                 }
             }
         }
-        //cout << "\n";
-        return result;
+        return false;
     }
 
     void draw(Faller& faller)
@@ -120,12 +119,13 @@ struct Grid
         Grid g{*this};
         g.update(faller);
 
-        for (int i: aoc::range(faller.ry+2))
-            cout << g.grid[faller.ry+1-i] << "\n"; 
+        for (int i: aoc::range(faller.ry + 2))
+            cout << g.grid[faller.ry + 1 - i] << "\n"; 
         cout << "\n";
     }
-    
-    void drop(int index, set<string>& patterns, vector<int>& tops)
+
+    // Called to drop a rock.    
+    void drop(int index, vector<int>& tops)
     {
         const Rock& rock = rocks[index % 5];
         int rx = 2;
@@ -136,16 +136,15 @@ struct Grid
         while (grid.size() < (ry+3))
             grid.push_back(".......");
 
-        //cout << "start\n";
-        //draw(faller);
-
         while (true)
         {
+            // Blow sideways - use a temporary copy so we can roll back if stuck
             Faller f2{faller};
             blow(f2);
             if (!stuck(f2))
                 faller = f2;
 
+            // Drop down - use a temporary copy so we can roll back if stuck
             Faller f3{faller};
             f3.down();
             if (stuck(f3)) 
@@ -153,27 +152,10 @@ struct Grid
             faller = f3;
         }
 
+        // The faller has landed.
         top = max(top, faller.ry);
         tops.push_back(top);
         update(faller, true);
-
-        static int prev_index = 0;
-        static int prev_top = 0;
-        static int count = 0;
-
-
-        if ((index > 0) and ((index % 10000) == 0))
-        {
-            int calc = tops[1705] * ((index - 865) / 1705) + tops[(index - 865) % 1705 + 865];
-            
-            cout << " dindex=" << (index-prev_index) << " dtop=" << (top-prev_top) << " index=" << index;
-            cout << " mod=" << (index % gases.size());
-            cout << " top=" << top << " calc=" << calc << " diff=" << (top-calc) << "\n";
-            prev_index = index;
-            prev_top   = top;
-        }
-
-        return;
     }
 
     vector<string> grid;
@@ -188,23 +170,13 @@ auto part1(const T& input)
 {
     aoc::timer timer;
 
-    set<string> patterns;
     vector<int> tops;
-
     Grid grid{input};  
-    for (int count: aoc::range(50'000))
-        grid.drop(count, patterns, tops);
+    for (int count: aoc::range(2022))
+        grid.drop(count, tops);
 
-    int64_t index = 1'000'000'000'000 - 1;
-    int64_t top = tops[1705] * ((index - 865) / 1705) + tops[(index - 865) % 1705 + 865];
-
-    for (int64_t i: aoc::range(2010, 2030))
-    {
-        int64_t calc = tops[1705] * ((i - 865) / 1705) + tops[(i - 865) % 1705 + 865];
-        cout << i << " " << calc << "\n";
-    }
-
-    return top;
+    // Indexing off by one 
+    return tops[2022 - 1];
 }
 
 
@@ -212,11 +184,28 @@ template <typename T>
 auto part2(const T& input)
 {
     aoc::timer timer;
-    return 0;
+
+    vector<int> tops;
+    Grid grid{input};  
+    for (int count: aoc::range(1706))
+        grid.drop(count, tops);
+   
+    // Indexing off by one. What would Carl say?
+    constexpr int64_t SAGAN = 1'000'000'000'000 - 1; 
+
+    // I determined from a lot of trial an error that the top line is a complete "#######" every so
+    // often. This is a floor and leads to a solution with modular arithmetic. The floor first appears
+    // at rock 865, and then repeats every 1705 rock. It took a lot longer than it should have done to 
+    // get this expression right. I couldn't be bothered to go back and determine these numbers 
+    // programmatically. The size of the input is a prime, but I don't know if that was helpful.
+    // 
+    // I was not able to find a repeating floor for the example, but noticed the floor goes through 
+    // cycles. I didn't try to obtain the figures to reproduce the example value for Part 2. 
+    int64_t top = tops[1705] * ((SAGAN - 865) / 1705) + tops[(SAGAN - 865) % 1705 + 865];
+
+    return top;
 }
 
-
-// 1'000'000'000'000
 
 void run(const char* filename)
 {
@@ -224,11 +213,11 @@ void run(const char* filename)
 
     auto p1 = part1(lines[0]);
     cout << "Part1: " << p1 << '\n';
-    //aoc::check_result(p1, 0);
+    aoc::check_result(p1, 3153);
 
     auto p2 = part2(lines[0]);
     cout << "Part2: " << p2 << '\n';
-    //aoc::check_result(p2, 0);
+    aoc::check_result(p2, 1553665689155);
 }
 
 
