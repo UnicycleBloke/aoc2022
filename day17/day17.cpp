@@ -125,7 +125,7 @@ struct Grid
     }
 
     // Called to drop a rock.    
-    void drop(int index, vector<int>& tops)
+    bool drop(int index, vector<int>& tops)
     {
         const Rock& rock = rocks[index % 5];
         int rx = 2;
@@ -156,12 +156,41 @@ struct Grid
         top = max(top, faller.ry);
         tops.push_back(top);
         update(faller, true);
+
+        if (index >= gases.size())
+        {
+            ostringstream os;
+            for (auto i: aoc::range(8))
+                os << grid[top - i]; 
+
+            if (index == gases.size())
+            {
+                pattern = os.str();
+                start  = index;
+            }
+            else
+            {
+                if (pattern == os.str())
+                {
+                    period = index - start;
+                    start  = start % period;
+                    cout << "Repeated pattern at " << index <<  ": start " << start << " after " << period << "\n";
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     vector<string> grid;
     string gases;
     int top{};
     int tick{};
+
+    string pattern;
+    int start{};
+    int period{};
+    int offset{};
 };
 
 
@@ -187,8 +216,8 @@ auto part2(const T& input)
 
     vector<int> tops;
     Grid grid{input};  
-    for (int count: aoc::range(1706))
-        grid.drop(count, tops);
+    for (int count: aoc::range(200'000))
+        if (grid.drop(count, tops)) break;
    
     // Indexing off by one. What would Carl say?
     constexpr int64_t SAGAN = 1'000'000'000'000 - 1; 
@@ -201,7 +230,11 @@ auto part2(const T& input)
     // 
     // I was not able to find a repeating floor for the example, but noticed the floor goes through 
     // cycles. I didn't try to obtain the figures to reproduce the example value for Part 2. 
-    int64_t top = tops[1705] * ((SAGAN - 865) / 1705) + tops[(SAGAN - 865) % 1705 + 865];
+    //int64_t top = tops[1705] * ((SAGAN - 865) / 1705) + tops[(SAGAN - 865) % 1705 + 865];
+
+    // Actually, I found a simple way to exploit the periodicity. This does not work for Part 1, so I 
+    // have still missed something. The sample input length is not prime.
+    int64_t top = tops[grid.period] * ((SAGAN - grid.start) / grid.period) + tops[(SAGAN - grid.start) % grid.period + grid.start];
 
     return top;
 }
