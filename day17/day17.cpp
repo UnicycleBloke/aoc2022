@@ -157,8 +157,11 @@ struct Grid
         tops.push_back(top);
         update(faller, true);
 
+        // Search for periodic patterns at the top of the pile. I noticed these when 
+        // printing debug output, and then there was much faff.     
         if (index >= gases.size())
         {
+           // Build a pattern string from the top layers of the grid. 
             ostringstream os;
             for (auto i: aoc::range(8))
                 os << grid[top - i]; 
@@ -170,6 +173,7 @@ struct Grid
             }
             else
             {
+                // If we find a match we can determine the period and offset, and we're done.
                 if (pattern == os.str())
                 {
                     period = index - start;
@@ -190,7 +194,6 @@ struct Grid
     string pattern;
     int start{};
     int period{};
-    int offset{};
 };
 
 
