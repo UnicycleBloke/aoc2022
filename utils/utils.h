@@ -244,8 +244,9 @@ int sgn(T val)
 class timer
 {
 public:
-    timer()
+    timer(std::string label = "")
     : m_start{cr::steady_clock::now()}
+    , m_label{label}
     {
     }
     
@@ -253,11 +254,15 @@ public:
     {
         auto end = cr::steady_clock::now();
         cr::duration<double> diff = end - m_start;
-        std::cout << "Time elapsed: " << (diff.count() * 1000) << "ms\n";
+        if (m_label.size() > 0)
+            std::cout << "Time elapsed: " << m_label << ": " << (diff.count() * 1000) << "ms\n";
+        else 
+            std::cout << "Time elapsed: " << (diff.count() * 1000) << "ms\n";
     }
 
 private:
     cr::time_point<cr::steady_clock> m_start{}; 
+    std::string m_label{};
 };
 
 

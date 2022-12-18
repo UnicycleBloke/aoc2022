@@ -106,42 +106,77 @@ auto part2(T& input)
 
 void run(const char* filename)
 {
-    auto lines = aoc::read_lines<string, int, string>(filename, R"(Valve (\w\w) has flow rate=(\d+); tunnels? leads? to valves? (.*))");
+    using Input = tuple<int, vector<string>>;
+    map<string, Input> input;
 
-    map<string,int> rates;
-    int max_rate = 0;
-    for (auto [valve, rate, extra]: lines)
+    auto lines = aoc::read_lines(filename);
+    for (auto line: lines)
     {
-        max_rate = rate;        
-        rates[valve] = rate;        
+        line = aoc::replace(line, ", ", ",");
+        auto [valve, rate, vs] = aoc::parse_line<string, int, string>(R"(Valve (\w\w) has flow rate=(\d+); tunnels? leads? to valves? (.*))", line);
+        auto valves = aoc::split(vs, ",", false);
+        input[valve] = make_tuple(rate, valves);
     }
 
-    auto [start, rate, extra] = lines[0];
+    // for (const auto& [valve, value]: input)
+    // {
+    //     const auto& [rate, valves] = value;
+    //     cout << valve << " " << rate << " "; 
+    //     for (auto v: valves)
+    //         cout << v << " ";
+    //     cout << "\n";
+    // }
 
-    map<string, tuple<string, int, vector<string>>> input;
-    for (auto [valve, rate, extra]: lines)
+    // for (const auto& [valve, value]: input)
+    // {
+    //     const auto& [rate, valves] = value;
+    //     for (auto v: valves)
+    //         cout << valve << " -> " << v << ";\n";
+    //     cout << valve << " [label=\"" << valve << " " << rate << "\"";
+    //     if (rate > 0)
+    //     {
+    //         cout << ", fontcolor=red, color=red";
+    //     }
+    //     cout << "];";
+    //     cout << "\n";
+    // }
+    
+    map<pair<string, string>, int> links;
+    for (const auto& [v1, value1]: input)
     {
-        //cout << valve << ": '" << extra << "'\n";
-        auto valves = aoc::split(extra, ",", false);
-        sort(valves.begin(), valves.end(), [&](const auto& a, const auto& b){ return rates[a] > rates[b]; });
-        input[valve] = make_tuple(valve, rate, valves);
+        for (const auto& [v2, value2]: input)
+        {
+            links[{v1, v2}] = 1'000'000; 
+        }
+ 
+        const auto& [rate1, valves1] = value1;
+        for (auto v2: valves1)
+        {
+            links[{v1, v2}] = 1; 
+        }
     }
 
-    for (const auto& [key, value]: input)
+    while (true)
     {
-        const auto& [valve, rate, valves] = value;
-        cout << valve << " " << rate << " "; 
-        for (auto v: valves)
-            cout << v << " ";
-        cout << "\n";
+        for (const auto& [from, value]: input)
+        {
+            const auto& [rate, valves] = value;
+            for (auto to: valves)
+            {
+                int d = links;
+            }
+                links[{from, to}] = 1; 
+        }
     }
 
-    auto p1 = part1(input, start);
-    cout << "Part1: " << p1 << '\n';
-    //aoc::check_result(p1, 0);
 
-    auto p2 = part2(input);
-    cout << "Part2: " << p2 << '\n';
+
+    // auto p1 = part1(input, start);
+    // cout << "Part1: " << p1 << '\n';
+    // //aoc::check_result(p1, 0);
+
+    // auto p2 = part2(input);
+    // cout << "Part2: " << p2 << '\n';
     //aoc::check_result(p2, 0);
 }
 
