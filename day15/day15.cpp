@@ -40,45 +40,6 @@ auto part1(const T& input)
 }
 
 
-// template <typename T>
-// auto part2a(const T& input)
-// {
-//     aoc::timer timer;
-
-//     for (int y: aoc::range(0, RANGE+1))
-//     {
-//         map<pair<int,int>, int> m;
-
-//         for (auto [sx, sy, bx, by]: input)
-//         {
-//             int d = distance(sx, sy, bx, by);
-//             for (int i: aoc::range(d))
-//             {
-//                 pair<int,int> l{sx-d+i,sy+i};
-//                 int ml = m[l];
-//                 m[l] = ml + 1;
-
-//                 pair<int,int> r{sx+d-1,sy-1};
-//                 int mr = m[r];
-//                 m[r] = mr + 1;
-
-//                 pair<int,int> u{sx,sy-d};
-//                 int mu = m[u];
-//                 m[u] = mu + 1;
-
-//                 auto pair<int,int> d{sx,sy+d};
-//                 int md = m[d];
-//                 m[d] = md + 1;
-//             }
-//         }
-//     }
-
-//     return int64_t{};
-// }
-
-
-
-
 template <typename T>
 auto part2(const T& input)
 {
@@ -130,13 +91,13 @@ void run(const char* filename)
 {    
     auto lines = aoc::read_lines<int,int,int,int>(filename, R"(Sensor at x=(-?\d+), y=(-?\d+): closest beacon is at x=(-?\d+), y=(-?\d+))");
     
-    // auto p1 = part1(lines);
-    // cout << "Part1: " << p1 << '\n';
-    // //aoc::check_result(p1, 0);
+    auto p1 = part1(lines);
+    cout << "Part1: " << p1 << '\n';
+    aoc::check_result(p1, 5688618U);
 
     auto p2 = part2(lines);
     cout << "Part2: " << p2 << '\n';
-    //aoc::check_result(p2, 0);
+    aoc::check_result(p2, 12625383204261);
 }
 
 

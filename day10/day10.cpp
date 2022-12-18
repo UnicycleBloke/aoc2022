@@ -8,7 +8,7 @@ struct Screen
     {
         for (const auto& line: input)
         {
-            auto s = aoc::split(line, " ", false);
+            auto s = aoc::split(line, " ");
             if (s[0] == string("noop"))
             {
                 ++cycles;

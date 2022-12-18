@@ -226,7 +226,7 @@ auto reduce(const char* filename)
     {
         line = aoc::replace(line, ", ", ",");
         auto [v1, rate, vs] = aoc::parse_line<string, int, string>(R"(Valve (\w\w) has flow rate=(\d+); tunnels? leads? to valves? (.*))", line);
-        auto valves = aoc::split(vs, ",", false);
+        auto valves = aoc::split(vs, ",");
 
         for (const auto& v2: valves)
         {

@@ -38,7 +38,7 @@ std::string replace(std::string source, const std::string& search, const std::st
 }
 
 
-std::vector<std::string> split(std::string source, std::string delim, bool allow_blanks)
+std::vector<std::string> split(std::string source, std::string delim, Blanks allow_blanks, Trim trim_subs)
 {
     std::vector<std::string> result;
 
@@ -47,8 +47,9 @@ std::vector<std::string> split(std::string source, std::string delim, bool allow
     while (end != std::string::npos)
     {
         auto sub = source.substr(start, end - start);
-        trim(sub);
-        if (allow_blanks || (sub.size() > 0))
+        if (trim_subs == Trim::Yes)
+            trim(sub);
+        if (allow_blanks == Blanks::Allow || (sub.size() > 0))
             result.push_back(sub);
 
         start = end + delim.length();
@@ -56,8 +57,9 @@ std::vector<std::string> split(std::string source, std::string delim, bool allow
     }
 
     auto sub = source.substr(start, end - start);
-    trim(sub);
-    if (allow_blanks || (sub.size() > 0))
+    if (trim_subs == Trim::Yes)
+        trim(sub);
+    if (allow_blanks == Blanks::Allow || (sub.size() > 0))
         result.push_back(sub);
 
     return result;
@@ -72,6 +74,7 @@ std::vector<std::string> read_lines(std::istream& is, Blanks allow_blanks, Trim 
     {
         std::string line;
         std::getline(is, line);
+
         if (trim_lines == Trim::Yes)
             trim(line);
         if (allow_blanks == Blanks::Allow || (line.size() > 0))
@@ -89,37 +92,35 @@ std::vector<std::string> read_lines(std::string filename, Blanks allow_blanks, T
 }
 
 
-std::vector<std::string> read_groups(std::istream& is)
+std::vector<std::vector<std::string>> read_groups(std::istream& is)
 {
-    std::ostringstream       ss;
-    std::vector<std::string> groups;
+    std::ostringstream ss;
+    std::vector<std::vector<std::string>> groups;
+
     std::vector<std::string> lines = read_lines(is, Blanks::Allow);
+    std::vector<std::string> group;
 
     for (const auto& line: lines)
     {
         if (line.size() > 0)
         {
-            ss << line << ' ';
+            group.push_back(line);
         }
         else
         {
-            auto group = ss.str();
             if (group.size() > 0)
                 groups.push_back(group);
-            ss.str("");
-            ss.clear();
+            group.clear();
         }        
     }
 
-    auto group = ss.str();
     if (group.size() > 0)
         groups.push_back(group);
-
     return groups;
 }
 
 
-std::vector<std::string> read_groups(std::string filename)
+std::vector<std::vector<std::string>> read_groups(std::string filename)
 {
     std::ifstream is{filename};
     return read_groups(is);

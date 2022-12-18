@@ -77,7 +77,7 @@ void run(const char* filename)
     int max_y{};
     for (const auto& line : lines)
     {
-        auto s = aoc::split(line, "->", false);
+        auto s = aoc::split(line, "->");
         for (const auto& p: s)
         {
             auto [x, y] = aoc::parse_line<int, int>(R"((\d+),(\d+))", p);
@@ -93,7 +93,7 @@ void run(const char* filename)
 
     for (const auto& line : lines)
     {
-        auto s = aoc::split(line, "->", false);
+        auto s = aoc::split(line, "->");
 
         auto [px, py] = aoc::parse_line<int, int>(R"((\d+),(\d+))", s[0]);
         grid[py][px] = '#';

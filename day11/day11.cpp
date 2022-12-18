@@ -101,46 +101,33 @@ void run(const char* filename)
 {
     auto lines = aoc::read_lines(filename, aoc::Blanks::Suppress, aoc::Trim::Yes);
 
+    auto items      = aoc::read_lines<string>(filename, R"(Starting items: (.*))", "@");
+    auto operation  = aoc::read_lines<char, string>(filename, R"(Operation: new = old (.) (.*))");
+    auto test       = aoc::read_lines<int>(filename, R"(Test: divisible by (\d+))");
+    auto if_true    = aoc::read_lines<int>(filename, R"(If true: throw to monkey (\d+))");
+    auto if_false   = aoc::read_lines<int>(filename, R"(If false: throw to monkey (\d+))");
+
     vector<Monkey> monkeys;
- 
-    int index = 0;
-    while (index < lines.size())
+    for (auto i: aoc::range(items.size()))
     {
-        if (lines[index].starts_with("Monkey"))
-        {
-            Monkey monkey; 
-            ++index;
+        Monkey monkey; 
 
-            auto items = aoc::split(lines[index], " ", true);
-            for (auto i : aoc::range(2U, items.size()))
-            {
-                auto item = stoi(items[i]);
-                monkey.items.push_back(item);
-            }
-            ++index;
+        auto list = aoc::split(get<0>(items[i]), ",@");
+        for (const auto& item : list)
+            monkey.items.push_back(stoi(item));
 
-            auto [op, val] = aoc::parse_line<char, string>(R"(Operation: new = old (.) (.*))", lines[index]);
-            monkey.op = op;
-            if (val.starts_with("old"))
-                monkey.val = -1;
-            else 
-                monkey.val = stoi(val);
-            ++index;    
+        auto [op, val] = operation[i];
+        monkey.op = op;
+        if (val.starts_with("old"))
+            monkey.val = -1;
+        else 
+            monkey.val = stoi(val);
 
-            auto [test] = aoc::parse_line<int>(R"(Test: divisible by (\d+))", lines[index]);
-            monkey.test = test;
-            ++index;
+        monkey.test     = get<0>(test[i]);
+        monkey.if_true  = get<0>(if_true[i]);
+        monkey.if_false = get<0>(if_false[i]);
 
-            auto [if_true] = aoc::parse_line<int>(R"(If true: throw to monkey (\d+))", lines[index]);
-            monkey.if_true = if_true;
-            ++index;
-
-            auto [if_false] = aoc::parse_line<int>(R"(If false: throw to monkey (\d+))", lines[index]);
-            monkey.if_false = if_false;
-            ++index;
-
-            monkeys.push_back(monkey);
-        }
+        monkeys.push_back(monkey);
     }
 
     auto p1 = part1(monkeys);

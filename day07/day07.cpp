@@ -95,7 +95,7 @@ void run(const char* filename)
 
     for (const auto& line: lines)
     {
-        auto s = aoc::split(line, " ", false);
+        auto s = aoc::split(line, " ");
         if (line[0] == '$')
         {
             if (s[1].compare("cd") == 0)
