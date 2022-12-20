@@ -2,7 +2,7 @@
 
 
 template <typename T>
-auto part1(const T& input)
+auto part1(const T& input, int cycles)
 {
     aoc::timer timer;
 
@@ -17,60 +17,69 @@ auto part1(const T& input)
         prev[i] = (i + size - 1) % size;
     }
 
-    for (auto i: aoc::range(size))
-        cout << input[next[(i + size - 1) % size]] << " ";
-    cout << "\n";
-
-
     auto first = 0;
-    for (auto i: aoc::range(size))
+    for (auto c: aoc::range(cycles))
     {
-        auto steps = input[i];
-        cout << "Steps " << steps << "\n";
-
-        //A -> B -> C -> D
-        //A -> C -> B -> D       
-
-        for (auto s: aoc::range(abs(steps)))
+        for (auto i: aoc::range(size))
         {
-            if (steps > 0)
+            int64_t steps = input[i];
+            auto dir = aoc::sgn(steps);
+            steps = abs(steps) % (size - 1);
+
+            cout << "Steps " << steps << "\n";
+
+            //A -> B -> C -> D
+            //A -> C -> B -> D       
+
+            for (auto s: aoc::range(steps))
             {
-                cout << "forward\n";
+                if (dir > 0)
+                {
+                    // cout << "forward\n";
 
-                auto a = prev[i];
-                auto b = i;
-                auto c = next[i];
-                auto d = next[next[i]];
+                    auto a = prev[i];
+                    auto b = i;
+                    auto c = next[i];
+                    auto d = next[next[i]];
 
-                next[a] = c;
-                next[c] = b;
-                next[b] = d;
+                    next[a] = c;
+                    next[c] = b;
+                    next[b] = d;
 
-                prev[d] = b;
-                prev[b] = c;
-                prev[c] = a;
+                    prev[d] = b;
+                    prev[b] = c;
+                    prev[c] = a;
 
-                if (b == first) first = c;
+                    if (b == first) first = c;
+                }
+                else if (dir < 0)
+                {
+                    // cout << "backward\n";
+
+                    auto a = prev[prev[i]];
+                    auto b = prev[i];
+                    auto c = i;
+                    auto d = next[i];
+
+                    next[a] = c;
+                    next[c] = b;
+                    next[b] = d;
+
+                    prev[d] = b;
+                    prev[b] = c;
+                    prev[c] = a;
+
+                    if (c == first) first = b;
+                }    
+
+                // auto index = first;
+                // for (auto i: aoc::range(size))
+                // {
+                //     cout << input[index] << " ";
+                //     index = next[index];
+                // }
+                // cout << "\n";
             }
-            else if (steps < 0)
-            {
-                cout << "backward\n";
-
-                auto a = prev[prev[i]];
-                auto b = prev[i];
-                auto c = i;
-                auto d = next[i];
-
-                next[a] = c;
-                next[c] = b;
-                next[b] = d;
-
-                prev[d] = b;
-                prev[b] = c;
-                prev[c] = a;
-
-                if (c == first) first = b;
-            }    
 
             // auto index = first;
             // for (auto i: aoc::range(size))
@@ -80,36 +89,27 @@ auto part1(const T& input)
             // }
             // cout << "\n";
         }
-
-        auto index = first;
-        for (auto i: aoc::range(size))
-        {
-            cout << input[index] << " ";
-            index = next[index];
-        }
-        cout << "\n";
     }
 
     auto index = 0;
-    while (true)
-    
-    for (auto i: aoc::range(3002))
+    while (input[index] != 0)
     {
         index = next[index];
-        if ((i % 1000) == 0)
-            cout << input[index] << " ";
     }
 
+    int64_t sum = 0;
+    for (auto j: aoc::range(3))
+    {
+        for (auto i: aoc::range(1000 % size))
+        {
+            index = next[index];
+        }
+        cout << input[index] << " ";
+        sum += input[index];
+    }
+    cout << "\n";
 
-    return 0;
-}
-
-
-template <typename T>
-auto part2(const T& input)
-{
-    aoc::timer timer;
-    return 0;
+    return sum;
 }
 
 
@@ -117,18 +117,19 @@ void run(const char* filename)
 {
     auto lines = aoc::read_lines<int>(filename, R"((-?\d+))");
 
-    vector<int> input;
+    vector<int64_t> input;
     for (auto [i]: lines)
-    {
         input.push_back(i);
-        //cout << i << "\n";
-    } 
 
-    auto p1 = part1(input);
+    vector<int64_t> input2;
+    for (auto [i]: lines)
+        input2.push_back(int64_t{811589153} * i);
+
+    auto p1 = part1(input, 1);
     cout << "Part1: " << p1 << '\n';
-    //aoc::check_result(p1, 0);
+    aoc::check_result(p1, 5498);
 
-    auto p2 = part2(input);
+    auto p2 = part1(input2, 10);
     cout << "Part2: " << p2 << '\n';
     //aoc::check_result(p2, 0);
 }
