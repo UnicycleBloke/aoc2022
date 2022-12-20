@@ -21,6 +21,8 @@ auto part1(const T& input)
         cout << input[next[(i + size - 1) % size]] << " ";
     cout << "\n";
 
+
+    auto first = 0;
     for (auto i: aoc::range(size))
     {
         auto steps = input[i];
@@ -47,6 +49,8 @@ auto part1(const T& input)
                 prev[d] = b;
                 prev[b] = c;
                 prev[c] = a;
+
+                if (b == first) first = c;
             }
             else if (steps < 0)
             {
@@ -64,6 +68,8 @@ auto part1(const T& input)
                 prev[d] = b;
                 prev[b] = c;
                 prev[c] = a;
+
+                if (c == first) first = b;
             }    
 
             auto index = prev[0];
