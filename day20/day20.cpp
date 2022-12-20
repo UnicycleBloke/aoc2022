@@ -72,15 +72,32 @@ auto part1(const T& input)
                 if (c == first) first = b;
             }    
 
-            auto index = prev[0];
-            for (auto i: aoc::range(size))
-            {
-                cout << input[index] << " ";
-                index = next[index];
-            }
-
-            cout << "\n";
+            // auto index = first;
+            // for (auto i: aoc::range(size))
+            // {
+            //     cout << input[index] << " ";
+            //     index = next[index];
+            // }
+            // cout << "\n";
         }
+
+        auto index = first;
+        for (auto i: aoc::range(size))
+        {
+            cout << input[index] << " ";
+            index = next[index];
+        }
+        cout << "\n";
+    }
+
+    auto index = 0;
+    while (true)
+    
+    for (auto i: aoc::range(3002))
+    {
+        index = next[index];
+        if ((i % 1000) == 0)
+            cout << input[index] << " ";
     }
 
 
