@@ -2,16 +2,16 @@
 
 
 template <typename T>
-auto part1(T& monkeys)
+int64_t part1(T& monkeys)
 {
     aoc::timer timer;
 
-    return monkeys["root"]->add();
+    return monkeys["root"]->add() + 0.001;
 }
 
 
 template <typename T>
-auto part2(T& monkeys)
+int64_t part2(T& monkeys)
 {
     aoc::timer timer;
 
@@ -38,12 +38,6 @@ auto part2(T& monkeys)
     {
         int64_t guess = (lower + upper) / 2;
 
-        humn->val = guess - 1;
-        if (root->eq()) return guess - 1;
-
-        humn->val = guess + 1;
-        if (root->eq()) return guess + 1;
-
         humn->val = guess;
         if (root->eq()) return guess;
 
@@ -62,7 +56,7 @@ struct Monkey
     Monkey* left{};
     Monkey* right{};
     char    op{};
-    int64_t val{};
+    double  val{};
  
     bool lt()
     {
@@ -79,12 +73,12 @@ struct Monkey
         return left->value() == right->value();
     }
 
-    int64_t add()
+    double add()
     {
         return left->value() + right->value();
     }
 
-    int64_t value() const 
+    double value() const 
     {
         if (left && right)
         {
@@ -110,13 +104,13 @@ void run(const char* filename)
         monkeys[get<0>(line)] = line;
 
     auto lines2 = aoc::read_lines<string, int>(filename, R"((\w+): (-?\d+))");
-    map<string, int64_t> numbers;
+    map<string, int> numbers;
     for (const auto& line: lines2)
         numbers[get<0>(line)] = get<1>(line);
 
     map<string, Monkey*> monkeys2;
     for (const auto& [monkey, val]: numbers)
-        monkeys2[monkey] = new Monkey{nullptr, nullptr, 0, val};
+        monkeys2[monkey] = new Monkey{nullptr, nullptr, 0, double(val)};
     for (const auto& [monkey, job]: monkeys)
         monkeys2[monkey] = new Monkey{nullptr, nullptr, 0, 0};
 
