@@ -1,32 +1,12 @@
 #include "utils.h"
 
 
-template <typename T, typename U>
-auto part1(T& monkeys, U numbers)
+template <typename T>
+auto part1(T& monkeys)
 {
     aoc::timer timer;
 
-    while (numbers.find("root") == numbers.end())
-    {
-        for (const auto& [key, job]: monkeys)
-        {
-            const auto& [monkey, left, op, right] = job;
-
-            if (numbers.find(monkey) != numbers.end()) continue;
-            if (numbers.find(left)   == numbers.end()) continue;
-            if (numbers.find(right)  == numbers.end()) continue;
-
-            switch (op)
-            {
-                case '+': numbers[monkey] = numbers[left] + numbers[right]; break;
-                case '-': numbers[monkey] = numbers[left] - numbers[right]; break;
-                case '*': numbers[monkey] = numbers[left] * numbers[right]; break;
-                case '/': numbers[monkey] = numbers[left] / numbers[right]; break;
-            }
-        }
-    }
-
-    return numbers["root"];
+    return monkeys["root"]->add();
 }
 
 
@@ -35,20 +15,14 @@ auto part2(T& monkeys)
 {
     aoc::timer timer;
 
-    int64_t lower = 0;
-    int64_t upper = 1;
-
     auto root = monkeys["root"];
     auto humn = monkeys["humn"];
 
-    cout << root->add() << "\n";
+    int64_t lower = 0;
+    int64_t upper = 1;
 
-    root->op  = '=';
     humn->val = lower;
     bool lower_gt = root->gt();
-    bool lower_lt = root->lt();
-
-    cout << lower_gt << " " << lower_lt << "\n";
 
     while (root->gt() == lower_gt) 
     {
@@ -59,26 +33,19 @@ auto part2(T& monkeys)
     lower /= 2;
     upper /= 2;
 
-    cout << lower << " " << upper << "\n";
-
     humn->val = lower;
     while (true) 
     {
         int64_t guess = (lower + upper) / 2;
 
         humn->val = guess - 1;
-        cout << lower << " " << upper << " guess=" << (guess - 1) << " " << boolalpha << root->lt() << " " << root->gt() << " " << root->eq() << "\n";
         if (root->eq()) return guess - 1;
 
         humn->val = guess + 1;
-        cout << lower << " " << upper << " guess=" << (guess + 1) << " " << boolalpha << root->lt() << " " << root->gt() << " " << root->eq() << "\n";
         if (root->eq()) return guess + 1;
 
         humn->val = guess;
-        cout << lower << " " << upper << " guess=" << guess << " "       << boolalpha << root->lt() << " " << root->gt() << " " << root->eq() << "\n";
         if (root->eq()) return guess;
-
-        cout << "\n";
 
         if (root->gt() == lower_gt)
             lower = guess;
@@ -138,17 +105,14 @@ struct Monkey
 void run(const char* filename)
 {
     auto lines  = aoc::read_lines<string, string, char, string>(filename, R"((\w+): (\w+) (\S) (\w+))");
-    auto lines2 = aoc::read_lines<string, int>(filename, R"((\w+): (-?\d+))");
-
     map<string, decltype(lines)::value_type>  monkeys;
-    map<string, int64_t> numbers;
-
     for (const auto& line: lines)
         monkeys[get<0>(line)] = line;
 
+    auto lines2 = aoc::read_lines<string, int>(filename, R"((\w+): (-?\d+))");
+    map<string, int64_t> numbers;
     for (const auto& line: lines2)
         numbers[get<0>(line)] = get<1>(line);
-
 
     map<string, Monkey*> monkeys2;
     for (const auto& [monkey, val]: numbers)
@@ -166,13 +130,13 @@ void run(const char* filename)
         monkeys2[monkey]->op    = op;
     }
 
-    auto p1 = part1(monkeys, numbers);
+    auto p1 = part1(monkeys2);
     cout << "Part1: " << p1 << '\n';
-    //aoc::check_result(p1, 0);
+    aoc::check_result(p1, 62386792426088);
 
     auto p2 = part2(monkeys2);
     cout << "Part2: " << p2 << '\n';
-    //aoc::check_result(p2, 0);
+    aoc::check_result(p2, 3876027196185);
 }
 
 
