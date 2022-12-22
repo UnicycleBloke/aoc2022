@@ -9,6 +9,7 @@ auto part1(vector<string> grid, string moves)
 {
     aoc::timer timer;
 
+    auto pass   = 0;
     auto height = grid.size();
     auto width  = grid[0].size();
 
@@ -92,7 +93,7 @@ auto part1(vector<string> grid, string moves)
         //     cout << ':' << s << ':' << "\n";
         // cout << "\n";
 
-        // auto pass = 1000U * (row+1) + 4U * (col+1) + static_cast<int>(dir);
+        pass = 1000U * (row+1) + 4U * (col+1) + static_cast<int>(dir);
         // cout << (row+1) << " " <<  (col+1) << " " << static_cast<int>(dir) << " " << pass << "\n";
 
         dir = (turn == 'R') ? right(dir): left(dir);
@@ -100,41 +101,69 @@ auto part1(vector<string> grid, string moves)
 
     }
 
-    return 0;
+    return pass;
 }
 
 
+//        |-------------|
+//        |  A   |  B   | 
+//        |------|------| 
+//        |  C   |
+// |------|------|
+// |  E   |  D   | 
+// |------|------|
+// |  F   |         
+// |------|
+
 auto change_left(size_t row, size_t col)
-{
-    if (row < 50)  return make_tuple<size_t, size_t, Dir>(149 - row%50,   0,           Right);
-    if (row < 100) return make_tuple<size_t, size_t, Dir>(100,                row%50,  Down);
-    if (row < 150) return make_tuple<size_t, size_t, Dir>( 49 - row%50,  50,           Right);
-    if (row < 200) return make_tuple<size_t, size_t, Dir>(  0,           50 + row%50,  Down);
+{    
+    // From A
+    if (row < 50)  return make_tuple<size_t, size_t, Dir>(149 - row%50, 0, Right);
+    // From C    
+    if (row < 100) return make_tuple<size_t, size_t, Dir>(100, row%50, Down);
+    // From E
+    if (row < 150) return make_tuple<size_t, size_t, Dir>(49 - row%50, 50, Right);
+    // From F
+    if (row < 200) return make_tuple<size_t, size_t, Dir>(0, 50 + row%50, Down);
+
     return tuple<size_t, size_t, Dir>{};
 }
 
 auto change_right(size_t row, size_t col)
 {
-    if (row < 50)  return make_tuple<size_t, size_t, Dir>(149 - row%50,  99,           Left);
-    if (row < 100) return make_tuple<size_t, size_t, Dir>( 49,          100 + row%50,  Up);
-    if (row < 150) return make_tuple<size_t, size_t, Dir>( 49 - row%50, 149,           Left);
-    if (row < 200) return make_tuple<size_t, size_t, Dir>(149,           50 + row%50,  Up);
+    // From B
+    if (row < 50)  return make_tuple<size_t, size_t, Dir>(149 - row%50, 99, Left);
+    // From C 
+    if (row < 100) return make_tuple<size_t, size_t, Dir>(49, 100 + row%50, Up);
+    // From D
+    if (row < 150) return make_tuple<size_t, size_t, Dir>(49 - row%50, 149, Left);
+    // From F
+    if (row < 200) return make_tuple<size_t, size_t, Dir>(149, 50 + row%50, Up);
+
     return tuple<size_t, size_t, Dir>{};
 }
 
 auto change_up(size_t row, size_t col)
 {
-    if (col < 50)  return make_tuple<size_t, size_t, Dir>( 99 - col%50,  50,           Right);
-    if (col < 100) return make_tuple<size_t, size_t, Dir>(150 + col%50,   0,           Right);
-    if (col < 150) return make_tuple<size_t, size_t, Dir>(149,                col%50,  Up);
+    // From E
+    if (col < 50)  return make_tuple<size_t, size_t, Dir>(50 + col%50, 50, Right);
+    // From A
+    if (col < 100) return make_tuple<size_t, size_t, Dir>(150 + col%50, 0, Right);
+    // From B
+    if (col < 150) return make_tuple<size_t, size_t, Dir>(199, col%50, Up);
+
     return tuple<size_t, size_t, Dir>{};
 }
 
 auto change_down(size_t row, size_t col)
 {
-    if (col < 50)  return make_tuple<size_t, size_t, Dir>(  0,          100 + col%50,  Down);
-    if (col < 100) return make_tuple<size_t, size_t, Dir>(150 + col%50,  49,           Left);
-    if (col < 150) return make_tuple<size_t, size_t, Dir>( 50 + col%50,  99,           Left);
+    // From F
+    if (col < 50)  return make_tuple<size_t, size_t, Dir>(0, 100 + col%50, Down);
+    // From D
+    if (col < 100) return make_tuple<size_t, size_t, Dir>(150 + col%50, 49, Left);
+    // From B
+    if (col < 150) return make_tuple<size_t, size_t, Dir>(50 + col%50, 99, Left);
+
     return tuple<size_t, size_t, Dir>{};
 }
 
@@ -155,8 +184,10 @@ auto part2(vector<string> grid, string moves)
 {
     aoc::timer timer;
 
+    auto pass   = 0;
     auto height = grid.size();
     auto width  = grid[0].size();
+    cout << height << " " << width << "\n";
 
     size_t col = 0;
     size_t row = 0;
@@ -172,7 +203,6 @@ auto part2(vector<string> grid, string moves)
         is >> steps >> turn;
 
         cout << "steps=" << steps << " turn=" << turn << "\n";
-        cout << "col=" << col << " row=" << row << " dir=" << static_cast<int>(dir)<< "\n";
 
         for (auto i: aoc::range(steps))
         {
@@ -214,12 +244,12 @@ auto part2(vector<string> grid, string moves)
             dir = dir2;
         }
 
-        auto pass = 1000U * (row+1) + 4U * (col+1) + static_cast<int>(dir);
-        cout << (row+1) << " " <<  (col+1) << " " << static_cast<int>(dir) << " " << pass << "\n";
+        pass = 1000U * (row+1) + 4U * (col+1) + static_cast<int>(dir);
+        // cout << (row+1) << " " <<  (col+1) << " " << static_cast<int>(dir) << " " << pass << "\n";
 
         dir = (turn == 'R') ? right(dir): left(dir);
 
-        constexpr const char* DIR = "RDLU";
+        //constexpr const char* DIR = "RDLU";
         // grid[row][col] = DIR[static_cast<int>(dir)];
         // cout << "\n";
         // for (const auto& s: grid)
@@ -228,81 +258,8 @@ auto part2(vector<string> grid, string moves)
 
     }
 
-    return 0;
+    return pass;
 }
-
-// Neighbour relationships based on the following net.
-// |--------------------|
-// | Left | Top  |Right | 
-// |------|------|------| 
-//        |Front |
-//        |------|
-//        |Bottom|
-//        |------|
-//        | Back | 
-//        |------|
-enum class Face  { Top, Bottom, Left, Right, Front, Back };
-enum class Angle { Clock0, Clock90, Clock180, Clock270, Anti180 = Clock180, Anti90 = Clock270, Anti270 = Clock90 };
-struct Neighbour { Face face, Angle angle }; // Relative angle.
-struct Neighbours
-{
-    Neighbour left;
-    Neighbour right;
-    Neighbour above;
-    Neighbour below;
-};
-
-constexpr Neighbours left =
-{
-    .left  = { Face::Bottom, Angle::Clock180 },
-    .right = { Face::Top,    Angle::None },
-    .above = { Face::Back,   Angle::Anti90 },
-    .below = { Face::Front,  Angle::Clock90 }
-};
-
-constexpr Neighbours right =
-{
-    .left  = { Face::Top,    Angle::None },
-    .right = { Face::Bottom, Angle::Clock180 },
-    .above = { Face::Back,   Angle::Clock90 },
-    .below = { Face::Front,  Angle::Anti90 }
-};
-
-constexpr Neighbours top =
-{
-    .left  = { Face::Left,   Angle::None },
-    .right = { Face::Right,  Angle::None },
-    .above = { Face::Back,   Angle::None },
-    .below = { Face::Front,  Angle::None }
-};
-
-constexpr Neighbours front =
-{
-    .left  = { Face::Left,   Angle::Anti90 },
-    .right = { Face::Right,  Angle::Clock90 },
-    .above = { Face::Top,    Angle::None },
-    .below = { Face::Bottom, Angle::None }
-};
-
-constexpr Neighbours bottom =
-{
-    .left  = { Face::Left,   Angle::Anti180 },
-    .right = { Face::Right,  Angle::Clock180 },
-    .above = { Face::Front,  Angle::None },
-    .below = { Face::Back,   Angle::None }
-};
-
-constexpr Neighbours back =
-{
-    .left  = { Face::Left,   Angle::Anti270 },
-    .right = { Face::Right,  Angle::Clock270 },
-    .above = { Face::Bottom, Angle::None },
-    .below = { Face::Front,  Angle::None }
-};
-
-
-
-
 
 
 void run(const char* filename)
@@ -311,8 +268,11 @@ void run(const char* filename)
 
     auto height = lines.size() - 2;
     auto width  = lines[0].size();
-    for (const auto& s: lines)
+    for (auto i: aoc::range(height))
+    {
+        auto s = lines[i];
         width = max(width, s.size());
+    }
 
     vector<string> grid;
     for (auto i: aoc::range(height))
@@ -323,13 +283,13 @@ void run(const char* filename)
         grid.push_back(s);
     }
 
-    // auto p1 = part1(grid, lines[height+1]);
-    // cout << "Part1: " << p1 << '\n';
-    // //aoc::check_result(p1, 0);
+    auto p1 = part1(grid, lines[height+1]);
+    cout << "Part1: " << p1 << '\n';
+    //aoc::check_result(p1, 0);
 
-    // auto p2 = part2(grid, lines[height+1]);
-    // cout << "Part2: " << p2 << '\n';
-    // //aoc::check_result(p2, 0);
+    auto p2 = part2(grid, lines[height+1]);
+    cout << "Part2: " << p2 << '\n';
+    //aoc::check_result(p2, 0);
 }
 
 
