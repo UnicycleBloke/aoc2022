@@ -40,7 +40,7 @@ auto part1(vector<string> grid, string moves)
                     while (grid[row][col2] == ' ') col2 = (col2 + 1) % width;
                     if (grid[row][col2] == '#') break;
                     col = col2;
-                    cout << "col=" << col << " row=" << row << "\n";
+                    // cout << "col=" << col << " row=" << row << "\n";
                 }
                 break;
 
@@ -54,7 +54,7 @@ auto part1(vector<string> grid, string moves)
                     while (grid[row][col2] == ' ') col2 = (col2 + width - 1) % width;
                     if (grid[row][col2] == '#') break;
                     col = col2;
-                    cout << "col=" << col << " row=" << row << "\n";
+                    // cout << "col=" << col << " row=" << row << "\n";
                 }
                 break;
 
@@ -64,11 +64,11 @@ auto part1(vector<string> grid, string moves)
                     grid[row][col] = '^';
 
                     auto row2 = row;
-                    row2 = (row2 + width - 1) % height;
-                    while (grid[row2][col] == ' ') row2 = (row2 + width - 1) % height;
+                    row2 = (row2 + height - 1) % height;
+                    while (grid[row2][col] == ' ') row2 = (row2 + height - 1) % height;
                     if (grid[row2][col] == '#') break;
                     row = row2;
-                    cout << "col=" << col << " row=" << row << "\n";
+                    // cout << "col=" << col << " row=" << row << "\n";
                 }
                 break;
 
@@ -82,15 +82,15 @@ auto part1(vector<string> grid, string moves)
                     while (grid[row2][col] == ' ') row2 = (row2 + 1) % height;
                     if (grid[row2][col] == '#') break;
                     row = row2;
-                    cout << "col=" << col << " row=" << row << "\n";
+                    // cout << "col=" << col << " row=" << row << "\n";
                 }
                 break;
         }  
 
-        grid[row][col] = '@';
-        for (const auto& s: grid)
-            cout << s << "\n";
-        cout << "\n";
+        // grid[row][col] = '@';
+        // for (const auto& s: grid)
+        //     cout << ':' << s << ':' << "\n";
+        // cout << "\n";
 
         auto pass = 1000U * (row+1) + 4U * (col+1) + static_cast<int>(dir);
         cout << (row+1) << " " <<  (col+1) << " " << static_cast<int>(dir) << " " << pass << "\n";
