@@ -18,6 +18,10 @@ int64_t part2(T& monkeys)
     auto root = monkeys["root"];
     auto humn = monkeys["humn"];
 
+    // A simple binary search based on the observation that the function
+    // appears to be monotonic. With a little more thought, I would have 
+    // realised that the function is linear in the human value and could 
+    // have solved y = mx + c. Ho hum.c
     int64_t lower = 0;
     int64_t upper = 1;
 
