@@ -231,6 +231,79 @@ auto part2(vector<string> grid, string moves)
     return 0;
 }
 
+// Neighbour relationships based on the following net.
+// |--------------------|
+// | Left | Top  |Right | 
+// |------|------|------| 
+//        |Front |
+//        |------|
+//        |Bottom|
+//        |------|
+//        | Back | 
+//        |------|
+enum class Face  { Top, Bottom, Left, Right, Front, Back };
+enum class Angle { Clock0, Clock90, Clock180, Clock270, Anti180 = Clock180, Anti90 = Clock270, Anti270 = Clock90 };
+struct Neighbour { Face face, Angle angle }; // Relative angle.
+struct Neighbours
+{
+    Neighbour left;
+    Neighbour right;
+    Neighbour above;
+    Neighbour below;
+};
+
+constexpr Neighbours left =
+{
+    .left  = { Face::Bottom, Angle::Clock180 },
+    .right = { Face::Top,    Angle::None },
+    .above = { Face::Back,   Angle::Anti90 },
+    .below = { Face::Front,  Angle::Clock90 }
+};
+
+constexpr Neighbours right =
+{
+    .left  = { Face::Top,    Angle::None },
+    .right = { Face::Bottom, Angle::Clock180 },
+    .above = { Face::Back,   Angle::Clock90 },
+    .below = { Face::Front,  Angle::Anti90 }
+};
+
+constexpr Neighbours top =
+{
+    .left  = { Face::Left,   Angle::None },
+    .right = { Face::Right,  Angle::None },
+    .above = { Face::Back,   Angle::None },
+    .below = { Face::Front,  Angle::None }
+};
+
+constexpr Neighbours front =
+{
+    .left  = { Face::Left,   Angle::Anti90 },
+    .right = { Face::Right,  Angle::Clock90 },
+    .above = { Face::Top,    Angle::None },
+    .below = { Face::Bottom, Angle::None }
+};
+
+constexpr Neighbours bottom =
+{
+    .left  = { Face::Left,   Angle::Anti180 },
+    .right = { Face::Right,  Angle::Clock180 },
+    .above = { Face::Front,  Angle::None },
+    .below = { Face::Back,   Angle::None }
+};
+
+constexpr Neighbours back =
+{
+    .left  = { Face::Left,   Angle::Anti270 },
+    .right = { Face::Right,  Angle::Clock270 },
+    .above = { Face::Bottom, Angle::None },
+    .below = { Face::Front,  Angle::None }
+};
+
+
+
+
+
 
 void run(const char* filename)
 {
@@ -250,13 +323,13 @@ void run(const char* filename)
         grid.push_back(s);
     }
 
-    auto p1 = part1(grid, lines[height+1]);
-    cout << "Part1: " << p1 << '\n';
-    //aoc::check_result(p1, 0);
+    // auto p1 = part1(grid, lines[height+1]);
+    // cout << "Part1: " << p1 << '\n';
+    // //aoc::check_result(p1, 0);
 
-    auto p2 = part2(grid, lines[height+1]);
-    cout << "Part2: " << p2 << '\n';
-    //aoc::check_result(p2, 0);
+    // auto p2 = part2(grid, lines[height+1]);
+    // cout << "Part2: " << p2 << '\n';
+    // //aoc::check_result(p2, 0);
 }
 
 
