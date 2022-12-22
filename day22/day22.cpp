@@ -25,8 +25,8 @@ auto part1(vector<string> grid, string moves)
         char   turn;
         is >> steps >> turn;
 
-        cout << "steps=" << steps << " turn=" << turn << "\n";
-        cout << "col=" << col << " row=" << row << " dir=" << static_cast<int>(dir)<< "\n";
+        // cout << "steps=" << steps << " turn=" << turn << "\n";
+        // cout << "col=" << col << " row=" << row << " dir=" << static_cast<int>(dir)<< "\n";
 
         switch (dir)
         {
@@ -107,6 +107,98 @@ auto part1(vector<string> grid, string moves)
 auto part2(const vector<string> grid, string moves)
 {
     aoc::timer timer;
+
+    auto height = grid.size();
+    auto width  = grid[0].size();
+
+    size_t col = 0;
+    size_t row = 0;
+    Dir    dir = Right;
+
+    while (grid[row][col] == ' ') ++col;
+
+    istringstream is{moves};
+    while (is)
+    {
+        size_t steps;
+        char   turn;
+        is >> steps >> turn;
+
+        // cout << "steps=" << steps << " turn=" << turn << "\n";
+        // cout << "col=" << col << " row=" << row << " dir=" << static_cast<int>(dir)<< "\n";
+
+        switch (dir)
+        {
+            case Right:
+                for (auto s: aoc::range(steps))
+                {
+                    grid[row][col] = '>';
+
+                    auto col2 = col;
+                    col2 = (col2 + 1) % width;
+                    while (grid[row][col2] == ' ') col2 = (col2 + 1) % width;
+                    if (grid[row][col2] == '#') break;
+                    col = col2;
+                    // cout << "col=" << col << " row=" << row << "\n";
+                }
+                break;
+
+            case Left:
+                for (auto s: aoc::range(steps))
+                {
+                    grid[row][col] = '<';
+
+                    auto col2 = col;
+                    col2 = (col2 + width - 1) % width;
+                    while (grid[row][col2] == ' ') col2 = (col2 + width - 1) % width;
+                    if (grid[row][col2] == '#') break;
+                    col = col2;
+                    // cout << "col=" << col << " row=" << row << "\n";
+                }
+                break;
+
+            case Up:
+                for (auto s: aoc::range(steps))
+                {
+                    grid[row][col] = '^';
+
+                    auto row2 = row;
+                    row2 = (row2 + height - 1) % height;
+                    while (grid[row2][col] == ' ') row2 = (row2 + height - 1) % height;
+                    if (grid[row2][col] == '#') break;
+                    row = row2;
+                    // cout << "col=" << col << " row=" << row << "\n";
+                }
+                break;
+
+            case Down:
+                for (auto s: aoc::range(steps))
+                {
+                    grid[row][col] = 'v';
+
+                    auto row2 = row;
+                    row2 = (row2 + 1) % height;
+                    while (grid[row2][col] == ' ') row2 = (row2 + 1) % height;
+                    if (grid[row2][col] == '#') break;
+                    row = row2;
+                    // cout << "col=" << col << " row=" << row << "\n";
+                }
+                break;
+        }  
+
+        // grid[row][col] = '@';
+        // for (const auto& s: grid)
+        //     cout << ':' << s << ':' << "\n";
+        // cout << "\n";
+
+        auto pass = 1000U * (row+1) + 4U * (col+1) + static_cast<int>(dir);
+        cout << (row+1) << " " <<  (col+1) << " " << static_cast<int>(dir) << " " << pass << "\n";
+
+        dir = (turn == 'R') ? right(dir): left(dir);
+
+
+    }
+
     return 0;
 }
 
