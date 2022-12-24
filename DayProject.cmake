@@ -11,18 +11,17 @@ target_include_directories(${AOC_PROGRAM_NAME} PUBLIC
     ../utils
 )
 
-# if (WIN32)
-# # CMake automagically includes the /RTC1 option, which is not compatible with using /O2.
-# # There is no simple way to remove /RTC1 (but you can use the IDE). Also, the default 
-# # build mode is Debug rather than Release. 
-# #target_compile_options(${AOC_PROGRAM_NAME} PUBLIC /std:c++20 /O2)
-# target_compile_options(${AOC_PROGRAM_NAME} PUBLIC /std:c++20)
-# target_link_libraries(${AOC_PROGRAM_NAME} aocutils)
-# endif (WIN32)
+if (WIN32)
+# CMake automagically includes the /RTC1 option, which is not compatible with using /O2.
+# There is no simple way to remove /RTC1 (but you can use the IDE). Also, the default 
+# build mode is Debug rather than Release. 
+#target_compile_options(${AOC_PROGRAM_NAME} PUBLIC /std:c++20)
+target_compile_options(${AOC_PROGRAM_NAME} PUBLIC /std:c++latest)
+#target_compile_options(${AOC_PROGRAM_NAME} PUBLIC /std:c++17)
+target_link_libraries(${AOC_PROGRAM_NAME} aocutils)
+endif (WIN32)
 
-if (UNIX)
-target_compile_options(${AOC_PROGRAM_NAME} PUBLIC -std=c++20 -O2)
-#target_compile_options(${AOC_PROGRAM_NAME} PUBLIC -std=c++20 -g -Og)
-target_link_libraries(${AOC_PROGRAM_NAME} curses aocutils)
-endif (UNIX)
-
+# if (UNIX)
+# target_compile_options(${AOC_PROGRAM_NAME} PUBLIC -std=c++20 -O2)
+# target_link_libraries(${AOC_PROGRAM_NAME} curses aocutils)
+# endif (UNIX)
